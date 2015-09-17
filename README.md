@@ -28,3 +28,6 @@ Target: x64
 4. At this point, halt the system with the debugger, change to 32-bit mode and set the instruction pointer to 32-bit-os.elf entrypoint.
 5. Ctrl-a, x to exit Qemu
 
+Credits:
+UefiBootLoader is based on the project by fgken https://github.com/fgken/uefi-bootloader
+32-bit-os.asm is based on http://wiki.osdev.org/Bare_Bones_with_NASM which is licensed under http://creativecommons.org/publicdomain/zero/1.0/
