@@ -103,7 +103,7 @@ ElfLoadSegment (
 
 			// Load the segment in memory
 			FileSegment = (VOID *)((UINTN)ElfImage + ProgramHdrPtr->p_offset);
-			MemSegment = (VOID *)(uint64_t)(ProgramHdrPtr->p_vaddr);
+			MemSegment = (VOID *)(UINT64)(ProgramHdrPtr->p_vaddr);
 			gBS->CopyMem(MemSegment, FileSegment, ProgramHdrPtr->p_filesz);
 		
 			// Fill memory with zero for .bss section and ...
@@ -118,7 +118,7 @@ ElfLoadSegment (
 		ProgramHdr += ElfHdr->e_phentsize;
 	}
 
-	*EntryPoint = (VOID *)(uint64_t)(ElfHdr->e_entry);
+	*EntryPoint = (VOID *)(UINT64)(ElfHdr->e_entry);
 
 	return (EFI_SUCCESS);
 }

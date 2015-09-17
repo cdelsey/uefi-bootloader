@@ -29,17 +29,16 @@
 #ifndef _SYS_ELF32_H_
 #define _SYS_ELF32_H_ 1
 
-#include <stdint.h>
 /*
  * ELF definitions common to all 32-bit architectures.
  */
 
-typedef uint32_t	Elf32_Addr;
-typedef uint16_t	Elf32_Half;
-typedef uint32_t	Elf32_Off;
-typedef int32_t		Elf32_Sword;
-typedef uint32_t	Elf32_Word;
-typedef uint64_t	Elf32_Lword;
+typedef UINT32	Elf32_Addr;
+typedef UINT16	Elf32_Half;
+typedef UINT32	Elf32_Off;
+typedef INT32	Elf32_Sword;
+typedef UINT32	Elf32_Word;
+typedef UINT64	Elf32_Lword;
 
 typedef Elf32_Word	Elf32_Hashelt;
 
