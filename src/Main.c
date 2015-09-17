@@ -262,7 +262,11 @@ ShellAppMain (
 	CheckStatus(Status, return(-1));
 	
 	// Jump to the entrypoint of executable
+#ifdef ELF64
 	goto *EntryPoint;
+#else
+    while(1);  //change mode to 32-bit with Lauterbach, then set instruction pointer to EntryPoint.
+#endif
 
 	// Unreachable!!!
 	return 0;
