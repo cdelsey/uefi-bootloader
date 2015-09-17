@@ -257,4 +257,7 @@ typedef struct {
   Elf64_Half      si_flags;       /* per symbol flags */
 } Elf64_Syminfo;
 
+typedef Elf64_Ehdr Elf_Ehdr;
+typedef Elf64_Phdr Elf_Phdr;
+
 #endif /* !_SYS_ELF64_H_ */

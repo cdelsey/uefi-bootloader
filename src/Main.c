@@ -9,7 +9,12 @@
 #include  <Protocol/LoadFile.h>
 
 #include  "elf_common.h"
-#include  "elf64.h"
+
+#ifdef ELF64
+#include "elf64.h"
+#else
+#include  "elf32.h"
+#endif
 
 #define CheckStatus(Status, Code)	{\
 	if(EFI_ERROR(Status)){\
@@ -70,13 +75,13 @@ ElfLoadSegment (
 	OUT VOID		**EntryPoint
 	)
 {
-	Elf64_Ehdr	*ElfHdr;
+	Elf_Ehdr	*ElfHdr;
 	UINT8		*ProgramHdr;
-	Elf64_Phdr	*ProgramHdrPtr;
+	Elf_Phdr	*ProgramHdrPtr;
 	UINTN		Index;
 	UINT8		IdentMagic[4] = {0x7f, 0x45, 0x4c, 0x46};
 
-	ElfHdr = (Elf64_Ehdr *)ElfImage;
+	ElfHdr = (Elf_Ehdr *)ElfImage;
 	ProgramHdr = (UINT8 *)ElfImage + ElfHdr->e_phoff;
 
 	for(Index=0; Index<4; Index++){
@@ -87,7 +92,7 @@ ElfLoadSegment (
 
 	// Load every loadable ELF segment into memory
 	for(Index = 0; Index < ElfHdr->e_phnum; Index++){
-		ProgramHdrPtr = (Elf64_Phdr *)ProgramHdr;
+		ProgramHdrPtr = (Elf_Phdr *)ProgramHdr;
 
 		// Only consider PT_LOAD type segments
 		if(ProgramHdrPtr->p_type == PT_LOAD){
@@ -98,7 +103,7 @@ ElfLoadSegment (
 
 			// Load the segment in memory
 			FileSegment = (VOID *)((UINTN)ElfImage + ProgramHdrPtr->p_offset);
-			MemSegment = (VOID *)ProgramHdrPtr->p_vaddr;
+			MemSegment = (VOID *)(uint64_t)(ProgramHdrPtr->p_vaddr);
 			gBS->CopyMem(MemSegment, FileSegment, ProgramHdrPtr->p_filesz);
 		
 			// Fill memory with zero for .bss section and ...
@@ -113,7 +118,7 @@ ElfLoadSegment (
 		ProgramHdr += ElfHdr->e_phentsize;
 	}
 
-	*EntryPoint = (VOID *)ElfHdr->e_entry;
+	*EntryPoint = (VOID *)(uint64_t)(ElfHdr->e_entry);
 
 	return (EFI_SUCCESS);
 }
