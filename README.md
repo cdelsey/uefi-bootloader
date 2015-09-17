@@ -2,10 +2,7 @@ UEFI-BootLoader
 =============
 
 ## Overview
-elf形式と生バイナリ形式のファイルをメモリ上にロードして実行するUEFIアプリです。
-[EDKII](https://github.com/tianocore/edk2)を使って作成。
-UEFIの勉強を兼ねた最低限の実装です。
-コードの理解しやすさ重視で作っています。
+Boot loader that will load a 32-bit OS image from a 64-bit UEFI system.
 
 ## Feature
 * Simple
@@ -16,20 +13,18 @@ Environment: Ubuntu 14.10 x86_64, gcc 4.9.1
 Target: x64
 
 1. apt-get install git uuid-dev nasm gcc g++ python ruby rake qemu-system-x86-64
-1. git submodule update --init
-1. rake setup
-1. cd edk2 && . edksetup.sh && cd ..
-1. rake build
-
-gccのバージョンが4.9.x以外の場合は、実行前にRakefileの"GCC49"の部分をバージョンに合わせて書き換えてください。
+2. git submodule update --init
+3. rake setup
+4. cd edk2 && . edksetup.sh && cd ..
+5. rake build
 
 ## How to Run
 1. rake run
 
 ## Running Example
 1. cd edk2 && . edksetup.sh && cd ..
-1. rake example
-1. (起動したコンソールに入力) UefiOSloader fs0:\out-serial-A.elf
-1. ('A'が出力されれば成功)
-1. Ctrl-a, xでqemuを終了
+2. rake example     # This will build the examples, create and image, and boot qemu with that image.
+3. (At the Qemu prompt) UefiOSloader fs0:\32-bit-os.elf
+4. At this point, halt the system with the debugger, change to 32-bit mode and set the instruction pointer to 32-bit-os.elf entrypoint.
+5. Ctrl-a, x to exit Qemu
 
