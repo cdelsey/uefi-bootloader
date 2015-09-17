@@ -46,7 +46,7 @@ task :run do
 	sh 'qemu-system-x86_64 -nographic -bios OVMF.fd -hda fat:image -net none'
 end
 
-task :example => [:setup, :build] do
+task :example => [:build] do
 	sh './make.sh', {chdir: 'examples'}, {}
 	Rake::Task["run"].invoke()
 end
