@@ -7,7 +7,6 @@ section .text
 bits 64
 start_os: ;OS entrypoint in rdi
     ;jmp start_os
-    mov rdx, rdi
     lgdt [mGdt]
     
    ; jump to 32 bit segment
@@ -30,7 +29,7 @@ compatibility_mode:
     ; Disable paging
     mov     eax, cr0
     btc     eax, 31
-    mov     cr0, ecx
+    mov     cr0, eax
     ;
     ; Clear EFER.LME
     ;
@@ -39,5 +38,5 @@ compatibility_mode:
     btc     eax, 8
     wrmsr
     
-    jmp edx
+    jmp edi
 
