@@ -17,6 +17,7 @@
 
 [Sources]
   Main.c
+  modechange.nasm
 
 [Packages]
   MdePkg/MdePkg.dec

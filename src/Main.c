@@ -16,12 +16,51 @@
 #include  "elf32.h"
 #endif
 
+void start_os(void*);
+
 #define CheckStatus(Status, Code)	{\
 	if(EFI_ERROR(Status)){\
 		Print(L"Error: Status = %d, LINE=%d in %s\n", (Status), __LINE__, __func__);\
 		Code;\
 	}\
 }
+
+#pragma pack(1)
+typedef union {
+  struct {
+    UINT32  LimitLow    : 16;
+    UINT32  BaseLow     : 16;
+    UINT32  BaseMid     : 8;
+    UINT32  Type        : 4;
+    UINT32  System      : 1;
+    UINT32  Dpl         : 2;
+    UINT32  Present     : 1;
+    UINT32  LimitHigh   : 4;
+    UINT32  Available   : 1;
+    UINT32  LongMode    : 1;
+    UINT32  DefaultSize : 1;
+    UINT32  Granularity : 1;
+    UINT32  BaseHigh    : 8;
+  } Bits;
+  UINT64  Uint64;
+} IA32_GDT;
+#pragma pack()
+
+IA32_GDT mGdtEntries[] = {
+  {{0,      0,  0,  0,    0,  0,  0,  0,    0,  0, 0,  0,  0}}, /* 0x0:  reserve */
+  {{0xFFFF, 0,  0,  0xB,  1,  0,  1,  0xF,  0,  0, 1,  1,  0}}, /* 0x8:  compatibility mode */
+  {{0xFFFF, 0,  0,  0xB,  1,  0,  1,  0xF,  0,  1, 0,  1,  0}}, /* 0x10: for long mode */
+  {{0xFFFF, 0,  0,  0x3,  1,  0,  1,  0xF,  0,  0, 1,  1,  0}}, /* 0x18: data */
+  {{0,      0,  0,  0,    0,  0,  0,  0,    0,  0, 0,  0,  0}}, /* 0x20: reserve */
+};
+
+//
+// IA32 Gdt register
+//
+IA32_DESCRIPTOR mGdt = {
+  sizeof (mGdtEntries) - 1,
+  (UINTN) mGdtEntries
+  };
 
 EFI_STATUS
 EFIAPI
@@ -239,6 +278,7 @@ ShellAppMain (
 //		*((UINT8 *)EntryPoint + 1) = 0xfe;
 	}
 
+	Print(L"Entrypoint %p\n", EntryPoint);
 	// ExitBootServices
 	Status = gBS->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey,
 						&DescriptorSize, &DescriptorVersion);
@@ -257,18 +297,21 @@ ShellAppMain (
 	Status = gBS->GetMemoryMap(&MemoryMapSize, MemoryMap, &MapKey,
 						&DescriptorSize, &DescriptorVersion);
 	CheckStatus(Status, return(-1));
-
+	
 	Status = gBS->ExitBootServices(gImageHandle, MapKey);
 	CheckStatus(Status, return(-1));
 	
+
 	// Jump to the entrypoint of executable
 #ifdef ELF64
 	goto *EntryPoint;
 #else
+	start_os(EntryPoint);
     while(1);  //change mode to 32-bit with Lauterbach, then set instruction pointer to EntryPoint.
 #endif
 
 	// Unreachable!!!
 	return 0;
 }
+
 
